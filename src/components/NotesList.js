@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useNavigate } from 'react-router-dom';
+import NotesContext from '../context/NotesContext';
 import NoteItem from "./NoteItem.js";
+import Placeholder from "./Placeholder";
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 
-const NoteList = ({
-    notes,
-    onAddNote,
-    onDeleteNote,
-    onEditNote,
-  }) => {
+
+const NoteList = () => {
+    const { notes } = useContext(NotesContext);
+
+    const navigate = useNavigate();
 
     return(
         <React.Fragment>
@@ -31,7 +33,7 @@ const NoteList = ({
                         Notes list
                     </Typography>
                     <Button 
-                        onClick={onAddNote}
+                        onClick={() => navigate('/create')}
                         variant="contained"
                         startIcon={<AddIcon />}
                     >
@@ -43,18 +45,19 @@ const NoteList = ({
                     direction="column"
                     spacing={{ xs: 4 }}
                 >
-                    {notes.map((item) => (
-                        <Grid
-                            item
-                            key={item.id}
-                        >
-                            <NoteItem
-                                note={item} 
-                                onDeleteNote={onDeleteNote}
-                                onEditNote={onEditNote}
-                             />
-                        </Grid>
-                    ))}
+                    {notes?.length ?
+                        notes.map((note) => (
+                            <Grid
+                                item
+                                key={note.id}
+                            >
+                                <NoteItem
+                                    note={note}
+                                />
+                            </Grid>
+                        )) :
+                        <Placeholder />
+                    }
                 </Grid>
             </Grid>
         </React.Fragment>

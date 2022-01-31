@@ -1,72 +1,67 @@
-import Grid from '@mui/material/Grid';
 import React, { useState, useEffect} from "react";
-import { v4 as uuidv4 } from 'uuid';
-import NoteForm from "./NoteForm.js";
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import NotesContext from '../context/NotesContext';
+import Grid from '@mui/material/Grid';
 import NotesList from "./NotesList.js";
+import NoteItem from "./NoteItem.js";
+import CreateNote from "./CreateNote";
+import EditNote from "./EditNote";
 
 function Main() {
     const [notes, setNotes] = useState(
         localStorage.notes ? JSON.parse(localStorage.notes) : []
     );
 
-    const [note, setNote] = useState(false);
-
     useEffect(() => {
         localStorage.setItem("notes", JSON.stringify(notes));
     }, [notes]);
 
-    const onAddNote = () => {
-        const newNote = {
-          id: uuidv4(),
-          title: "Untitled note",
-          content: "",
-        };
-    
-        setNotes([newNote, ...notes]);
-        setNote(newNote.id);
-      };
-    
-      const onUpdateNote = (updated) => {
-        const updatedNotes = notes.map((note) => {
-          if (note.id === updated.id) {
-            return updated;
-          }
-    
-          return note;
-        });
-    
-        setNotes(updatedNotes);
-        setNote(null);
-      };
+    const navigate = useNavigate();
 
-      const onDeleteNote = (deleted) => {
-        setNotes(notes.filter(({ id }) => id !== deleted));
-      };
-    
-      const getNote = () => {
-        return notes.find(({ id }) => id === note);
-      };
-    
+    const handleOnSubmit = (newNote) => {
+        setNotes([newNote, ...notes]);
+        navigate('/');
+    };
 
     return(
         <React.Fragment>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <NoteForm
-                        note={getNote()}
-                        onUpdateNote={onUpdateNote}
-                    />
+          <NotesContext.Provider
+            value={{ notes, setNotes }}
+          >
+            <Grid
+              container
+              spacing={10}
+            >
+                <Grid
+                  item
+                  xs={6}
+                >
+                  <Routes>
+                      <Route
+                        element={<NoteItem />}
+                        path="/preview/:id"
+                      />
+                      <Route
+                        element={<CreateNote handleOnSubmit={handleOnSubmit} />}
+                        path="/create"
+                      />
+                      <Route
+                        element={<EditNote handleOnSubmit={handleOnSubmit} />}
+                        path="/edit/:id"
+                      />
+                      <Route
+                        element={() => <Navigate to="/" />}
+                      />
+                  </Routes>
                 </Grid>
-                <Grid item xs={6}>
-                    <NotesList                 
-                        notes={notes}
-                        onAddNote={onAddNote}
-                        onEditNote={setNote}
-                        setNotes={setNotes}
-                        onDeleteNote={onDeleteNote}
-                    />
+                <Grid
+                  item
+                  xs={6}
+                >
+                  <NotesList />
                 </Grid>
             </Grid>
+          </NotesContext.Provider>
         </React.Fragment>   
     );
 }
