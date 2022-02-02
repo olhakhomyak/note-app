@@ -23,31 +23,35 @@ const NoteForm = (props) => {
     const CHARACTERS_LIMIT = 1000;
 
     const { title, content } = note;
-    
-    const handleOnSubmit = (event) => {
-        event.preventDefault();
+
+    const hasErrors = () => {
         const values = [title, content];
-        let errorMsg = '';
+
         const allFieldsFilled = values.every((field) => {
             const value = field.trim();
             return value !== '';
         });
 
         if(!allFieldsFilled) {
-            errorMsg = 'Please fill out all the fields';
+            return 'Please fill out all the fields';
         } else if(content.length > CHARACTERS_LIMIT) {
-            errorMsg = `You have exceeded the maximum number of ${CHARACTERS_LIMIT} characters in this note`;
-        }  else {
-            const validContent = content.replace(/(<([^>]+)>)/gi, "");
-            const note = {
-                id: props.editMode ? props.note.id : uuidv4(),
-                title,
-                content: validContent,
-            };
-            props.handleOnSubmit(note);
+            return `You have exceeded the maximum number of ${CHARACTERS_LIMIT} characters in this note`;
         }
+      }
+    
+    const handleOnSubmit = (event) => {
+        event.preventDefault();
 
-        setErrorMsg(errorMsg);
+        const error = hasErrors();
+        if(error) return setErrorMsg(error);
+
+        const validContent = content.replace(/(<([^>]+)>)/gi, "");
+        const note = {
+            id: props.editMode ? props.note.id : uuidv4(),
+            title,
+            content: validContent,
+        };
+        props.handleOnSubmit(note);
     };
 
     const handleInputChange = (event) => {
@@ -60,7 +64,7 @@ const NoteForm = (props) => {
     };
 
     return (
-        <React.Fragment>
+        <>
             <Typography
                 variant="h4"
                 align="left"
@@ -144,7 +148,7 @@ const NoteForm = (props) => {
                     </Alert>
                 }
             </form>
-        </React.Fragment>
+        </>
       );
 }
 

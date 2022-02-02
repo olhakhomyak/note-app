@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate } from 'react-router-dom';
-import NotesContext from '../context/NotesContext';
+import { useNotes } from '../context/NotesContext';
 import NoteItem from "./NoteItem.js";
 import Placeholder from "./Placeholder";
 import Button from '@mui/material/Button';
@@ -10,12 +10,12 @@ import AddIcon from '@mui/icons-material/Add';
 
 
 const NoteList = () => {
-    const { notes } = useContext(NotesContext);
+    const { notes } = useNotes();
 
     const navigate = useNavigate();
 
     return(
-        <React.Fragment>
+        <>
             <Grid
                 container
                 direction="column"
@@ -60,7 +60,7 @@ const NoteList = () => {
                     }
                 </Grid>
             </Grid>
-        </React.Fragment>
+        </>
     )
 }
 

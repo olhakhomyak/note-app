@@ -1,6 +1,6 @@
-import React, { useContext }  from 'react';
+import React  from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import NotesContext from '../context/NotesContext';
+import { useNotes } from '../context/NotesContext';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const NoteItem = ({ note }) => {
-    const { notes, setNotes } = useContext(NotesContext);
+    const { notes, dispatch } = useNotes();
     
     const { id } = useParams();
     
@@ -25,7 +25,7 @@ const NoteItem = ({ note }) => {
     }
     
     const onDeleteNote = (deleted) => {
-        setNotes(notes.filter(({ id }) => id !== deleted));
+        dispatch({type: 'DELETE_NOTE', note: deleted})
         if(id === deleted.id) navigate('/')
     };
 
@@ -64,7 +64,7 @@ const NoteItem = ({ note }) => {
                         Edit
                     </Button>
                     <Button
-                        onClick={() => {onDeleteNote(note.id)}}
+                        onClick={() => {onDeleteNote(note)}}
                         size="small"
                         variant="contained"
                         color="error"
