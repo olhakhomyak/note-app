@@ -4,7 +4,7 @@ import { useNotes } from '../context/NotesContext';
 import NoteForm from './NoteForm';
 
 const EditNote = () => {
-    const { notes, dispatch } = useNotes();
+    const [notes, dispatch] = useNotes();
 
     const navigate = useNavigate();
 
@@ -12,8 +12,8 @@ const EditNote = () => {
 
     const note = notes.find(item => item.id === id)
 
-    const handleOnSubmit = (updated) => {
-        dispatch({type: 'EDIT_NOTE', note: updated})
+    const handleOnSubmit = (updatedNote) => {
+        dispatch.editNote(updatedNote)
         navigate('/');
     };
 

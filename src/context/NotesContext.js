@@ -1,5 +1,6 @@
-import React, { useReducer, useEffect, useContext } from "react";
+import React, { useReducer, useEffect, useContext, useState } from "react";
 import notesReducer from "../reducers/notesReducer";
+import { createNote, editNote, deleteNote } from "../actions/notesActions";
 
 export const NotesContext = React.createContext(null);
 
@@ -12,10 +13,10 @@ export function NotesProvider(props) {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
 
-  const contextValue = {
+  const contextValue = [
     notes,
     dispatch,
-  };
+  ];
 
   return (
     <NotesContext.Provider value={contextValue}>
@@ -25,6 +26,12 @@ export function NotesProvider(props) {
 }
 
 export function useNotes() {
-  const context = useContext(NotesContext);
-  return context;
+  const [state, dispatch] = useContext(NotesContext);
+  const [actions] = useState(() => ({
+      createNote: createNote(dispatch),
+      editNote: editNote(dispatch),
+      deleteNote: deleteNote(dispatch),
+  }));
+
+  return [state, actions];
 }

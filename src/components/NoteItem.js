@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const NoteItem = ({ note }) => {
-    const { notes, dispatch } = useNotes();
+    const [notes, dispatch] = useNotes();
     
     const { id } = useParams();
     
@@ -24,9 +24,9 @@ const NoteItem = ({ note }) => {
         editMode = false;
     }
     
-    const onDeleteNote = (deleted) => {
-        dispatch({type: 'DELETE_NOTE', note: deleted})
-        if(id === deleted.id) navigate('/')
+    const onDeleteNote = (deletedId) => {
+        dispatch.deleteNote(deletedId)
+        if(id === deletedId) navigate('/')
     };
 
     return(
@@ -64,7 +64,7 @@ const NoteItem = ({ note }) => {
                         Edit
                     </Button>
                     <Button
-                        onClick={() => {onDeleteNote(note)}}
+                        onClick={() => {onDeleteNote(note.id)}}
                         size="small"
                         variant="contained"
                         color="error"

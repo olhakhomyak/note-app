@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 
 const NoteList = () => {
-    const { notes } = useNotes();
+    const [notes] = useNotes();
 
     const navigate = useNavigate();
 

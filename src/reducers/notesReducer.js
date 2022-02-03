@@ -1,18 +1,26 @@
 export default function notesReducer(notes, action) {
     switch (action.type) {
       case "CREATE_NOTE":
-        const { note } = action;
+        const { id, title, content } = action;
 
-        return([note, ...notes]);
+        return([{
+          id,
+          title,
+          content,
+        }, ...notes]);
       case "EDIT_NOTE": {
-          const { note } = action;
-          const filteredNotes = notes.filter(({ id }) => id !== note.id);
+          const { id, title, content } = action;
+          const filteredNotes = notes.filter(item => item.id !== id);
 
-          return([note, ...filteredNotes]);
+          return([{
+            id,
+            title,
+            content,
+          }, ...filteredNotes]);
         }
       case "DELETE_NOTE": {
-          const { note } = action;
-          const filteredNotes = notes.filter(({ id }) => id !== note.id);
+          const { id } = action;
+          const filteredNotes = notes.filter(item => item.id !== id);
 
           return filteredNotes;
        }

@@ -5,10 +5,10 @@ import NoteForm from './NoteForm';
 const CreateNote = () => {
   const navigate = useNavigate();
 
-  const { dispatch } = useNotes();
+  const [ _, dispatch ] = useNotes();
 
   const handleOnSubmit = (newNote) => {
-    dispatch({type: 'CREATE_NOTE', note: newNote})
+    dispatch.createNote(newNote)
     navigate('/');
 };
 
