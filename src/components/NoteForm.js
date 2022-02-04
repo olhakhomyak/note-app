@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Grid from '@mui/material/Grid';
@@ -24,26 +24,20 @@ const NoteForm = (props) => {
 
     const { title, content } = note;
 
-    const hasErrors = () => {
-        const values = [title, content];
+    const titleErrors = useMemo(() => {
+        if(title === '') return "Title can't be blank";
+    }, [title]);
 
-        const allFieldsFilled = values.every((field) => {
-            const value = field.trim();
-            return value !== '';
-        });
-
-        if(!allFieldsFilled) {
-            return 'Please fill out all the fields';
-        } else if(content.length > CHARACTERS_LIMIT) {
-            return `You have exceeded the maximum number of ${CHARACTERS_LIMIT} characters in this note`;
-        }
-      }
+    const contentErrors = useMemo(() => {
+        if(content === '') return "Content can't be blank";
+        if(content.length > CHARACTERS_LIMIT) return `You have exceeded the maximum number of ${CHARACTERS_LIMIT} characters in this note`;
+    }, [content]);
     
     const handleOnSubmit = (event) => {
         event.preventDefault();
-
-        const error = hasErrors();
-        if(error) return setErrorMsg(error);
+        
+        const err = titleErrors || contentErrors;
+        if(err) return setErrorMsg(err)
 
         const validContent = content.replace(/(<([^>]+)>)/gi, "");
         const note = {
@@ -87,6 +81,7 @@ const NoteForm = (props) => {
                             type="text"
                             fullWidth
                             margin="normal"
+                            error={!!(errorMsg && titleErrors)}
                             value={title}
                             onChange={handleInputChange}
                         />
@@ -103,7 +98,7 @@ const NoteForm = (props) => {
                             rows={5}
                             fullWidth
                             margin="normal"
-                            error={content.length > CHARACTERS_LIMIT}
+                            error={!!(errorMsg && contentErrors)}
                             value={content}
                             onChange={handleInputChange}
                         />
