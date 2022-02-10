@@ -1,4 +1,6 @@
-import * as React from 'react';
+import React  from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useNotes } from '../context/NotesContext';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -7,51 +9,72 @@ import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const NoteItem = ({
-    note,
-    onDeleteNote,
-    onEditNote
-}) => {
+
+const NoteItem = ({ note }) => {
+    const [notes, dispatch] = useNotes();
+    
+    const { id } = useParams();
+    
+    const navigate = useNavigate();
+    
+    let editMode = true;
+    
+    if(!note) {
+        note = notes.find(note => note.id === id);
+        editMode = false;
+    }
+    
+    const onDeleteNote = (deletedId) => {
+        dispatch.deleteNote(deletedId)
+        if(id === deletedId) navigate('/')
+    };
+
     return(
         <Card
             sx={{ minWidth: 275 }}
             variant="outlined"
         >
-            <CardContent>
+            <CardContent
+                onClick={() => navigate(`/preview/${note.id}`)}
+            >
                 <Typography
-                    sx={{ fontSize: 14 }}
-                    color="text.secondary"
+                    sx={{ fontSize: 21 }}
+                    align='left'
                     gutterBottom
                 >
                     { note.title }
                 </Typography>
                 <Typography
-                    color="text.secondary"
+                    sx={{ fontSize: 16 }}
+                    align='left'
                 >
                     { note.content }
                 </Typography>
             </CardContent>
-            <CardActions
-                sx={{justifyContent:"flex-end"}}    
-            >
-                <Button
-                    onClick={(e) => onEditNote(note.id)} 
-                    size="small"
-                    variant="contained"
-                    startIcon={<EditIcon />}
+            {editMode ?
+                <CardActions
+                    sx={{justifyContent:"flex-end"}}
                 >
-                    Edit
-                </Button>
-                <Button
-                    onClick={(e) => onDeleteNote(note.id)} 
-                    size="small"
-                    variant="contained"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                >
-                    Delete
-                </Button>
-            </CardActions>
+                    <Button
+                        onClick={() => navigate(`/edit/${note.id}`)}
+                        size="small"
+                        variant="contained"
+                        startIcon={<EditIcon />}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        onClick={() => {onDeleteNote(note.id)}}
+                        size="small"
+                        variant="contained"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                    >
+                        Delete
+                    </Button>
+                </CardActions> : 
+                null
+            }
       </Card>
     )
 }
