@@ -16,7 +16,10 @@ const NoteForm = (props) => {
         };
     });
 
-    const [errorMsg, setErrorMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState({
+        title: null,
+        content: null,
+    });
 
     const navigate = useNavigate();
 
@@ -36,8 +39,12 @@ const NoteForm = (props) => {
     const handleOnSubmit = (event) => {
         event.preventDefault();
         
-        const err = titleErrors || contentErrors;
-        if(err) return setErrorMsg(err)
+        if(titleErrors || contentErrors) {
+            return setErrorMsg({
+                title: titleErrors || null,
+                content: contentErrors || null,
+            })
+        }
 
         const validContent = content.replace(/(<([^>]+)>)/gi, "");
         const note = {
@@ -50,7 +57,13 @@ const NoteForm = (props) => {
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        if(errorMsg) setErrorMsg('');
+
+        if(errorMsg.title && name === 'title') {
+            setErrorMsg({...errorMsg, title: null});
+        }
+        if(errorMsg.content && name === 'content') {
+            setErrorMsg({...errorMsg, content: null});
+        }
         setNote((prevState) => ({
             ...prevState,
             [name]: value
@@ -81,7 +94,7 @@ const NoteForm = (props) => {
                             type="text"
                             fullWidth
                             margin="normal"
-                            error={!!(errorMsg && titleErrors)}
+                            error={!!(errorMsg.title)}
                             value={title}
                             onChange={handleInputChange}
                         />
@@ -98,7 +111,7 @@ const NoteForm = (props) => {
                             rows={5}
                             fullWidth
                             margin="normal"
-                            error={!!(errorMsg && contentErrors)}
+                            error={!!(errorMsg.content)}
                             value={content}
                             onChange={handleInputChange}
                         />
@@ -134,12 +147,18 @@ const NoteForm = (props) => {
                         </Button>
                     </Grid>
                 </Grid>
-                {errorMsg && 
+                {(errorMsg.title || errorMsg.content) && 
                     <Alert
                         severity="error"
                         sx={{marginTop: "1em"}}
                     >
-                        { errorMsg }
+
+                        <Typography align="left">
+                            { errorMsg.title } 
+                        </Typography>
+                        <Typography align="left">
+                            { errorMsg.content } 
+                        </Typography>
                     </Alert>
                 }
             </form>

@@ -1,17 +1,16 @@
 import React, { useReducer, useEffect, useContext, useState } from "react";
 import notesReducer from "../reducers/notesReducer";
+import { getNotes, saveNotes } from "../services/fetchNotes"
 import { createNote, editNote, deleteNote } from "../actions/notesActions";
 
 export const NotesContext = React.createContext(null);
 
-const initialNotes = localStorage.notes ? JSON.parse(localStorage.notes) : []
-
 export function NotesProvider(props) {
+  const [initialNotes] = useState(() => getNotes());
+  console.log(initialNotes, 777)
   const [notes, dispatch] = useReducer(notesReducer, initialNotes);
 
-  useEffect(() => {
-    localStorage.setItem("notes", JSON.stringify(notes));
-  }, [notes]);
+  useEffect(() => { saveNotes(notes) }, [notes]);
 
   const contextValue = [
     notes,
